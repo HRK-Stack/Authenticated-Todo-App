@@ -18,7 +18,7 @@ export const register = async(req,res) => {
             id:user._id,
             name:user.name,
             email:user.email,
-            token:generateToken(user._id)
+            token: await generateToken(user._id)
         });
     }catch(err){
         res.status(500).json({message:err.message});
@@ -30,21 +30,23 @@ export const login = async(req,res) => {
 
     if(!email || !password){
         return res.status(400).json({message:"email and Password Required"});
-    }
+    }    
 
     try {
-        const user = await User.findOne({email});
+        const user = await User.findOne({email}).select('+password');        
 
-        if(!user ||  !(await user.matchPassword(password)))
+        if(!user || !(await user.matchPassword(password)))
         {
             return res.status(401).json({message:"Invalid Credentials"});
-        }
+        }        
+
+        const token = await generateToken(user._id);
 
         res.status(200).json({
             id:user._id,
             name:user.name,
             email:user.email,
-            token:generateToken(user._id)
+            token
         })
     } catch (err) {
          res.status(500).json({message:err.message});

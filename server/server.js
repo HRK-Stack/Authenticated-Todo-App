@@ -17,4 +17,6 @@ app.use("/api/user",userRouter);
 app.use("/api/todo",todoRouter);
 
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT ,() => {
+    console.log("Server Started");
+});
